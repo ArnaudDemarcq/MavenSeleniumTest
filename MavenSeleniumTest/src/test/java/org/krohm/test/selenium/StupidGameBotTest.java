@@ -25,7 +25,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  *
  * @author Arnaud
  */
-public class StupidGameBot {
+public class StupidGameBotTest {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StupidGameBot.class);
     private static final String STUPID_GAME_LOGIN_URL = "http://www.sexgangsters.com/login/";
