@@ -53,7 +53,7 @@ function makeFightStep1(rivalId){
         url:        "http://www.sexgangsters.com/api/", 
         async:      false,
         "data":     {
-            "data": "data:{\"method\":\"pvp.fight.start\",\"args\":{\"rivalId\":" + rivalId +"\"}}"
+            "data": "{\"method\":\"pvp.fight.start\",\"args\":{\"rivalId\":" + rivalId +"\"}}"
         }, 
         headers:    {
             "X-CSRFToken":getCookie("csrftoken")
@@ -78,7 +78,7 @@ function makeFightStep2(){
         url:        "http://www.sexgangsters.com/api/", 
         async:      false,
         "data":     {
-            "data": "data:{\"method\":\"pvp.fight.finish\",\"args\":{\"boosters\":null}}"
+            "data": "{\"method\":\"pvp.fight.finish\",\"args\":{\"boosters\":null}}"
         }, 
         headers:    {
             "X-CSRFToken":getCookie("csrftoken")
