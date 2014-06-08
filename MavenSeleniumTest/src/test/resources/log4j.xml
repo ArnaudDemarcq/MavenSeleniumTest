@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
-    absolutely necessary under windows
+    <!-- absolutely necessary under windows given the $*!&@%^ console -->
     <appender name="AsynchAllLogs" class="org.apache.log4j.AsyncAppender">
         <param name="BufferSize" value="100000"/>
         <appender-ref ref="ConsoleAppender"/>
@@ -19,7 +19,6 @@
             <param name="ConversionPattern" value="%-5p - %-26.26c{1} - %m\n"/>
         </layout>
     </appender>
-    
     <root>
         <priority value="INFO"/>
         <appender-ref ref="AsynchAllLogs"/>
