@@ -28,7 +28,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class GoogleTest {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(GoogleTest.class);
-    private static final TMP_TEST_URL = "http://www.google.fr"
+    private static final String TMP_TEST_URL = "http://www.google.fr";
 
     @Test
     public void helloWorldTest() {
