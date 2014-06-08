@@ -28,6 +28,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class GoogleTest {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(GoogleTest.class);
+    private static final TMP_TEST_URL = "http://www.google.fr"
 
     @Test
     public void helloWorldTest() {
@@ -38,8 +39,8 @@ public class GoogleTest {
     public void openBrowser() {
         LOGGER.info("Getting base URL ...");
         String baseUrl = System.getProperty("test.google.url");
-        LOGGER.info("base URL is: " + baseUrl);
-        WebDriver driver = new ChromeDriver();
+        LOGGER.info("base URL is: " + TMP_TEST_URL);
+        WebDriver driver = new HtmlUnitDriver();
         driver.get(baseUrl);
         LOGGER.info("Page loaded, title is: " + driver.getTitle());
     }
