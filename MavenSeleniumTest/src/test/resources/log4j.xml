@@ -19,7 +19,7 @@
             <param name="ConversionPattern" value="%-5p - %-26.26c{1} - %m\n"/>
         </layout>
     </appender>
-    <logger name="com.humanlog">
+    <logger name="org.krohm">
         <level value="DEBUG"/>
     </logger>
     <root>
