@@ -38,7 +38,7 @@ public class GoogleTest {
     @Test
     public void openBrowser() {
         LOGGER.info("Getting base URL ...");
-        String baseUrl = System.getProperty("test.google.url");
+        String baseUrl = TMP_TEST_URL; //System.getProperty("test.google.url");
         LOGGER.info("base URL is: " + TMP_TEST_URL);
         WebDriver driver = new HtmlUnitDriver();
         driver.get(baseUrl);
