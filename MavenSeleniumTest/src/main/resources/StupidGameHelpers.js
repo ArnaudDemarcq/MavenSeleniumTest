@@ -30,18 +30,18 @@ function harvestAll(){
 function getRivalsList(){
     var returnVar = "DTC";
     $.ajax({
-        type: "POST", 
-        url: "http://www.sexgangsters.com/api/", 
-        async:   false,
-        "data": {
+        type:       "POST", 
+        url:        "http://www.sexgangsters.com/api/", 
+        async:      false,
+        "data":     {
             "data": "{\"method\":\"pvp.rivals.get\",\"args\":{\"cSetId\":0,\"cItemId\":0}}"
         }, 
-        headers: {
+        headers:    {
             "X-CSRFToken":getCookie("csrftoken")
         },
-        success: function(result) {
-            if(result.isOk == false)
-                returnVar=result.message;
+        success:    function(data) {
+            alert(data);
+            returnVar=result.message;
         }
     });
     return returnVar;
