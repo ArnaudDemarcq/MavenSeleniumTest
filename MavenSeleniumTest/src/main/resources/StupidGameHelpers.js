@@ -40,8 +40,7 @@ function getRivalsList(){
             "X-CSRFToken":getCookie("csrftoken")
         },
         success:    function(data) {
-            alert(data);
-            returnVar=result.message;
+            returnVar=data;
         }
     });
     return returnVar;
