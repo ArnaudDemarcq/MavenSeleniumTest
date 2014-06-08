@@ -5,21 +5,11 @@
 package org.krohm.test.selenium;
 
 import org.junit.Test;
-import org.slf4j.LoggerFactory;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.LoggerFactory;
 
 /**
  *
