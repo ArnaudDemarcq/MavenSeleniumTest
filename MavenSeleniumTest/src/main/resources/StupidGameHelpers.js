@@ -48,12 +48,13 @@ function getRivalsList(){
 
 function makeFightStep1(rivalId){
     var returnVar = "DTC";
+    var dataVar = "{\"method\":\"pvp.fight.start\",\"args\":{\"rivalId\":" + rivalId +"}}";
     $.ajax({
         type:       "POST", 
         url:        "http://www.sexgangsters.com/api/", 
         async:      false,
         "data":     {
-            "data": "{\"method\":\"pvp.fight.start\",\"args\":{\"rivalId\":" + rivalId +"\"}}"
+            "data": dataVar
         }, 
         headers:    {
             "X-CSRFToken":getCookie("csrftoken")
