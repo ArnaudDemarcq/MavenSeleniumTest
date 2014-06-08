@@ -16,7 +16,7 @@ function harvestAll(){
             "data": "{\"method\":\"city.business.collectAll\"}"
         }, 
         headers: {
-            "X-CSRFToken":getCookie(csrftoken)
+            "X-CSRFToken":getCookie("csrftoken")
         }
     });
 }
