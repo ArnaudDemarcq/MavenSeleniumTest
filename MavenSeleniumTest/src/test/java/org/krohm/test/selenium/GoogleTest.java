@@ -20,6 +20,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 /**
  *
  * @author Arnaud
@@ -40,5 +41,6 @@ public class GoogleTest {
         LOGGER.info("base URL is: " + baseUrl);
         WebDriver driver = new ChromeDriver();
         driver.get(baseUrl);
+        LOGGER.info("Page loaded, title is: " + driver.getTitle());
     }
 }
