@@ -46,6 +46,41 @@ function getRivalsList(){
     return returnVar;
 }
 
+function makeFight(rivalId){
+    var step = 0;
+    $.ajax({
+        type:       "POST", 
+        url:        "http://www.sexgangsters.com/api/", 
+        async:      false,
+        "data":     {
+            "data": "data:{\"method\":\"pvp.fight.start\",\"args\":{\"rivalId\":" + rivalId +"\"}}"
+        }, 
+        headers:    {
+            "X-CSRFToken":getCookie("csrftoken")
+        },
+        success:    function(data) {
+            step=1;
+        }
+    });
+    // Fight exec
+    $.ajax({
+        type:       "POST", 
+        url:        "http://www.sexgangsters.com/api/", 
+        async:      false,
+        "data":     {
+            "data": "data:{\"method\":\"pvp.fight.finish\",\"args\":{\"boosters\":null}}"
+        }, 
+        headers:    {
+            "X-CSRFToken":getCookie("csrftoken")
+        },
+        success:    function(data) {
+            step=2;
+        }
+    }); 
+    return step;
+}
+
+
 function testFunction() {
     return "hello from js";
 }
