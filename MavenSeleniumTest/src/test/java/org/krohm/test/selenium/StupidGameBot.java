@@ -28,16 +28,30 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class StupidGameBot {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StupidGameBot.class);
-    private static final String TMP_TEST_URL = "http://www.sexgangsters.com/login/";
-
+    private static final String STUPID_GAME_LOGIN_URL = "http://www.sexgangsters.com/login/";
+    private static final String LOGIN = "krohm";
+    private static final String PASSWORD = "kil";
 
     @Test
     public void harvestCash() {
-        LOGGER.info("Getting base URL ...");
-        String baseUrl = TMP_TEST_URL; //System.getProperty("test.google.url");
-        LOGGER.info("base URL is: <" + TMP_TEST_URL + ">");
         WebDriver driver = new HtmlUnitDriver();
-        driver.get(baseUrl);
-        LOGGER.info("Page loaded, title is: " + driver.getTitle());
+        stupidGameLogin(driver);
+
+    }
+
+    private void stupidGameLogin(WebDriver driver) {
+        LOGGER.info("Getting login URL ...");
+        String loginUrl = STUPID_GAME_LOGIN_URL; //System.getProperty("test.google.url");
+        LOGGER.info("Login URL is: <" + loginUrl + ">");
+        driver.get(loginUrl);
+        LOGGER.info("Login Page loaded, title is: " + driver.getTitle());
+        // Effective login
+        WebElement loginElement = driver.findElement(By.name("username"));
+        WebElement passwordElement = driver.findElement(By.name("password"));
+        loginElement.sendKeys(LOGIN);
+        passwordElement.sendKeys(PASSWORD);
+        loginElement.submit();
+        LOGGER.info("Post Login Page loaded, title is: " + driver.getTitle());
+
     }
 }
