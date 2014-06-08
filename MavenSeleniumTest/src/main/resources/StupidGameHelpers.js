@@ -1,7 +1,7 @@
 if(typeof String.prototype.trim !== 'function') {
-  String.prototype.trim = function() {
-    return this.replace(/^\s+|\s+$/g, ''); 
-  }
+    String.prototype.trim = function() {
+        return this.replace(/^\s+|\s+$/g, ''); 
+    }
 }
 
 function getCookie(cname) {
@@ -26,3 +26,24 @@ function harvestAll(){
         }
     });
 }
+
+function getRivalsList(){
+    var returnVar = "DTC";
+    $.ajax({
+        type: "POST", 
+        url: "http://www.sexgangsters.com/api/", 
+        async:   false,
+        "data": {
+            "data": "{\"method\":\"pvp.rivals.get\",\"args\":{\"cSetId\":0,\"cItemId\":0}}"
+        }, 
+        headers: {
+            "X-CSRFToken":getCookie("csrftoken")
+        },
+        success: function(result) {
+            if(result.isOk == false)
+                returnVar=result.message;
+        }
+    });
+    return returnVar;
+}
+
