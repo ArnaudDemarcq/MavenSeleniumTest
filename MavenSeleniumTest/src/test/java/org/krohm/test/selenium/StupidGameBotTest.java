@@ -39,6 +39,7 @@ public class StupidGameBotTest {
     private static final String STUPID_GAME_HARVEST_LOAD_SCRIPT = "jQuery.getScript(\"" + STUPID_GAME_CUSTOM_JS_URL + "\");";
     private static final String STUPID_GAME_HARVEST_AJAX = "harvestAll();";
     private static final String STUPID_GAME_FIGHT_LIST_AJAX = "return JSON.stringify(getRivalsList());";//getRivalsList()
+    private static final String STUPID_GAME_FIGHT_STEP1_AJAX = "return JSON.stringify(makeFightStep1(";//getRivalsList()
 
     private void stupidGameLogin(WebDriver driver) {
         LOGGER.debug("Getting login URL ...");
@@ -90,23 +91,42 @@ public class StupidGameBotTest {
             String rawList = (String) jsDriver.executeScript(STUPID_GAME_FIGHT_LIST_AJAX);
             rawList = rawList.substring(1, rawList.length() - 1);
             rawList = rawList.replace("\\", "");
-            LOGGER.trace("Runing Fight function: " + rawList);
+            LOGGER.trace("Runing Fight List function: " + rawList);
             JSONParser parser = new JSONParser();
             JSONObject result = (JSONObject) parser.parse(rawList);
             LOGGER.trace("Runing Fight function: " + result.toJSONString());
             JSONArray rivals = (JSONArray) result.get("response");
+            RivalDescription bestRival = null;
             for (int i = 0; i < rivals.size(); i++) {
                 JSONObject currentRival = (JSONObject) rivals.get(i);
                 LOGGER.trace("got one: " + currentRival.toJSONString());
                 RivalDescription currentRivalDescription = parseRivalJson(currentRival);
+                bestRival = compareRivals(bestRival, currentRivalDescription);
                 LOGGER.info(currentRivalDescription.toString());
             }
-            LOGGER.debug("Runing Fight function: " + rawList);
+            LOGGER.info("Best rival id is: <" + bestRival.getId() + ">.");
+            String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + "));";
+            LOGGER.debug("Runing Fight function: " + realQuerry);
+            String rawAnswer = (String) jsDriver.executeScript(realQuerry);
+            LOGGER.debug("Runing Fight function: " + rawAnswer);
 
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
         }
         LOGGER.trace(driver.getPageSource());
+    }
+
+    private RivalDescription compareRivals(RivalDescription rd1, RivalDescription rd2) {
+        if (rd2 == null) {
+            return rd1;
+        }
+        if (rd1 == null) {
+            return rd2;
+        }
+        if (rd2.getDefense() < rd1.getAttack()) {
+            return rd2;
+        }
+        return rd1;
     }
 
     private RivalDescription parseRivalJson(JSONObject currentRival) {
@@ -137,10 +157,10 @@ public class StupidGameBotTest {
             returnRivalDescription.setId(Integer.parseInt(stringNum));
         } catch (Exception ex) {
             LOGGER.debug(ex.getMessage());
-        } 
+        }
         // name
         try {
-            returnRivalDescription.setName((String)currentRival.get("username"));
+            returnRivalDescription.setName((String) currentRival.get("username"));
         } catch (Exception ex) {
             LOGGER.debug(ex.getMessage());
         }
