@@ -59,7 +59,7 @@ function makeFightStep1(rivalId){
             "X-CSRFToken":getCookie("csrftoken")
         },
         success:    function(data) {
-            var returnVar = data;
+            returnVar = data;
         }
     });
     makeFightStep2();
