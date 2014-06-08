@@ -47,3 +47,7 @@ function getRivalsList(){
     return returnVar;
 }
 
+function testFunction() {
+    return "hello from js";
+}
+
