@@ -21,10 +21,12 @@ import org.slf4j.LoggerFactory;
 public class StupidGameBotTest {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StupidGameBotTest.class);
+    private static final String STUPID_GAME_CUSTOM_JS_URL = "https://raw.githubusercontent.com/ArnaudDemarcq/MavenSeleniumTest/master/MavenSeleniumTest/src/main/resources/StupidGameHelpers.js";
     private static final String STUPID_GAME_LOGIN_URL = "http://www.sexgangsters.com/login/";
     private static final String LOGIN = "krohm";
     private static final String PASSWORD = "kil";
     private static final String STUPID_GAME_HARVEST_URL = "http://www.sexgangsters.com/#business";
+    private static final String STUPID_GAME_HARVEST_LOAD_SCRIPT = "jQuery.getScript(\"" + STUPID_GAME_CUSTOM_JS_URL + "\");";
     private static final String STUPID_GAME_HARVEST_AJAX = "harvestAll();";
 
     @Test
@@ -54,7 +56,9 @@ public class StupidGameBotTest {
     private void stupidGameHarvest(WebDriver driver) throws InterruptedException {
         driver.get(STUPID_GAME_HARVEST_URL);
         if (driver instanceof JavascriptExecutor) {
-            ((JavascriptExecutor) driver).executeScript(STUPID_GAME_HARVEST_AJAX);
+            JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
+            LOGGER.info("Loading Script: " + jsDriver.executeScript(STUPID_GAME_HARVEST_LOAD_SCRIPT));
+            LOGGER.info("Runing harvest function: " + jsDriver.executeScript(STUPID_GAME_HARVEST_AJAX));;
         } else {
             LOGGER.info("Was worth trying ...");
         }
