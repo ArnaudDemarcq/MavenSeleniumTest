@@ -47,7 +47,7 @@ function getRivalsList(){
 }
 
 function makeFightStep1(rivalId){
-   var returnVar = "DTC";
+    var returnVar = "DTC";
     $.ajax({
         type:       "POST", 
         url:        "http://www.sexgangsters.com/api/", 
@@ -60,14 +60,18 @@ function makeFightStep1(rivalId){
         },
         success:    function(data) {
             returnVar = data;
-        }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            returnVar = textStatus;
+        }    
+        
     });
     makeFightStep2();
     return returnVar;
 }
 
 function makeFightStep2(){
-   var returnVar = "DTC";
+    var returnVar = "DTC";
     // Fight exec
     $.ajax({
         type:       "POST", 
