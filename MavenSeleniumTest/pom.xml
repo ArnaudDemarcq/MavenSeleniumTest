@@ -44,7 +44,13 @@
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
             <scope>test</scope>
-        </dependency>  
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -53,6 +59,7 @@
         <junit.version>4.9</junit.version>
         <!-- TEST properties -->
         <test.google.url>http://www.bing.fr</test.google.url>
+        <webdriver.chrome.driver>C:/Program Files (x86)/Google/Chrome/Application/Chrome.exe</webdriver.chrome.driver>
     </properties>
 
 </project>
