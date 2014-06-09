@@ -96,3 +96,26 @@ function testFunction() {
     return "hello from js";
 }
 
+function genericStupidGameCaller(dataString){
+    var returnVar = "DTC";
+    // Fight exec
+    $.ajax({
+        type:       "POST", 
+        url:        "http://www.sexgangsters.com/api/", 
+        async:      false,
+        "data":     {
+            "data": dataString
+        }, 
+        headers:    {
+            "X-CSRFToken":getCookie("csrftoken")
+        },
+        success:    function(data) {
+            returnVar=data;
+        }
+    }); 
+    return returnVar;
+}
+
+function harvestAll_test(){
+    return genericStupidGameCaller("{\"method\":\"city.business.collectAll\"}");
+}
