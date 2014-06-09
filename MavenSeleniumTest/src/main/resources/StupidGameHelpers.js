@@ -119,3 +119,16 @@ function genericStupidGameCaller(dataString){
 function harvestAll_test(){
     return genericStupidGameCaller("{\"method\":\"city.business.collectAll\"}");
 }
+
+function getRivalsList_test(){
+     return genericStupidGameCaller("{\"method\":\"pvp.rivals.get\",\"args\":{\"cSetId\":0,\"cItemId\":0}}");
+}
+
+function fightStep1_test(rivalId){
+    var dataVar = "{\"method\":\"pvp.fight.start\",\"args\":{\"rivalId\":" + rivalId +"}}";
+    return genericStupidGameCaller(dataVar);
+}
+
+function fightStep2_test(){
+    return genericStupidGameCaller("{\"method\":\"pvp.fight.finish\",\"args\":{\"boosters\":null}}");
+}
