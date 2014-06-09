@@ -14,7 +14,7 @@ function getCookie(cname) {
     return "";
 }
 
-function harvestAll(){
+function harvestAll_OLD(){
     $.ajax({
         type: "POST", 
         url: "http://www.sexgangsters.com/api/", 
@@ -27,7 +27,7 @@ function harvestAll(){
     });
 }
 
-function getRivalsList(){
+function getRivalsList_OLD(){
     var returnVar = "DTC";
     $.ajax({
         type:       "POST", 
@@ -46,7 +46,7 @@ function getRivalsList(){
     return returnVar;
 }
 
-function makeFightStep1(rivalId){
+function makeFightStep1_OLD(rivalId){
     var returnVar = "DTC";
     var dataVar = "{\"method\":\"pvp.fight.start\",\"args\":{\"rivalId\":" + rivalId +"}}";
     $.ajax({
@@ -71,7 +71,7 @@ function makeFightStep1(rivalId){
     return returnVar;
 }
 
-function makeFightStep2(){
+function makeFightStep2_OLD(){
     var returnVar = "DTC";
     // Fight exec
     $.ajax({
@@ -116,26 +116,26 @@ function genericStupidGameCaller(dataString){
     return returnVar;
 }
 
-function harvestAll_test(){
+function harvestAll(){
     return genericStupidGameCaller("{\"method\":\"city.business.collectAll\"}");
 }
 
-function getRivalsList_test(){
+function getRivalsList(){
     return genericStupidGameCaller("{\"method\":\"pvp.rivals.get\",\"args\":{\"cSetId\":0,\"cItemId\":0}}");
 }
 
-function fightStep1_test(rivalId){
+function fightStep1(rivalId){
     var dataVar = "{\"method\":\"pvp.fight.start\",\"args\":{\"rivalId\":" + rivalId +"}}";
     return genericStupidGameCaller(dataVar);
 }
 
-function fightStep2_test(){
+function fightStep2(){
     return genericStupidGameCaller("{\"method\":\"pvp.fight.finish\",\"args\":{\"boosters\":null}}");
 }
 
-function fightAll_test(rivalId){ // Sambe behavior as before
-    var step1Return = fightStep1_test(rivalId);
-    var step2Return =  fightStep2_test();
+function fightAll(rivalId){ // Sambe behavior as before
+    var step1Return = fightStep1(rivalId);
+    var step2Return = fightStep2();
     return {
         "step1" :step1Return, 
         "step2": step2Return

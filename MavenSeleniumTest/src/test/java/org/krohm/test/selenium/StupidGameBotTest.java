@@ -10,6 +10,8 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.util.Map;
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -32,16 +34,22 @@ public class StupidGameBotTest {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StupidGameBotTest.class);
     private static final String STUPID_GAME_CUSTOM_JS_URL = "https://raw.githubusercontent.com/ArnaudDemarcq/MavenSeleniumTest/master/MavenSeleniumTest/src/main/resources/StupidGameHelpers.js";
+    //private static final String STUPID_GAME_CUSTOM_JS_URL = Utils.readRessource("/StupidGameHelpers.js");
     private static final String STUPID_GAME_LOGIN_URL = "http://www.sexgangsters.com/login/";
     private static final String LOGIN = "krohm";
     private static final String PASSWORD = "kil";
     private static final String STUPID_GAME_HARVEST_URL = "http://www.sexgangsters.com/#business";
     private static final String STUPID_GAME_HARVEST_LOAD_SCRIPT = "jQuery.getScript(\"" + STUPID_GAME_CUSTOM_JS_URL + "\");";
-    private static final String STUPID_GAME_HARVEST_AJAX = "harvestAll();";
-    private static final String STUPID_GAME_FIGHT_LIST_AJAX = "return JSON.stringify(getRivalsList());";//getRivalsList()
-    private static final String STUPID_GAME_FIGHT_STEP1_AJAX = "return JSON.stringify(makeFightStep1(";//getRivalsList()
+    private static final String STUPID_GAME_HARVEST_AJAX = "return harvestAll();";
+    private static final String STUPID_GAME_FIGHT_LIST_AJAX = "return getRivalsList();";//getRivalsList()
+    private static final String STUPID_GAME_FIGHT_STEP1_AJAX = "return fightAll(";//getRivalsList()
+    //private static final String STUPID_GAME_FIGHT_LIST_AJAX = "return JSON.stringify(getRivalsList());";//getRivalsList()
+    //private static final String STUPID_GAME_FIGHT_STEP1_AJAX = "return JSON.stringify(makeFightStep1(";//getRivalsList()
 
-    private void stupidGameLogin(WebDriver driver) {
+    public StupidGameBotTest() throws Exception {
+    }
+
+    private void stupidGameLogin(WebDriver driver) throws Exception {
         LOGGER.debug("Getting login URL ...");
         String loginUrl = STUPID_GAME_LOGIN_URL; //System.getProperty("test.google.url");
         LOGGER.debug("Login URL is: <" + loginUrl + ">");
@@ -55,6 +63,21 @@ public class StupidGameBotTest {
         passwordElement.sendKeys(PASSWORD);
         loginButton.click();
         LOGGER.debug("Post Login Page loaded, title is: " + driver.getTitle());
+        Utils.readRessource("/StupidGameHelpers.js");
+        driver.get(STUPID_GAME_HARVEST_URL);
+
+
+    }
+
+    private void loadCustomScript(JavascriptExecutor jsDriver) throws Exception {
+        LOGGER.debug("Loading custom Script: " + jsDriver.executeScript(STUPID_GAME_HARVEST_LOAD_SCRIPT));
+    }
+
+    private void loadCustomScript_new(JavascriptExecutor jsDriver) throws Exception {
+        String script = Utils.readRessource("/StupidGameHelpers.js");
+        LOGGER.error(script);
+        LOGGER.debug("Loading custom Script: " + jsDriver.executeScript(script));
+
     }
 
     @Test
@@ -70,12 +93,11 @@ public class StupidGameBotTest {
         logStupidGameCounters(driver);
     }
 
-    private void stupidGameHarvest(WebDriver driver) throws InterruptedException {
+    private void stupidGameHarvest(WebDriver driver) throws Exception {
         LOGGER.info("Starting Harverst Feature ...");
-        driver.get(STUPID_GAME_HARVEST_URL);
         if (driver instanceof JavascriptExecutor) {
             JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
-            LOGGER.debug("Loading Script: " + jsDriver.executeScript(STUPID_GAME_HARVEST_LOAD_SCRIPT));
+            loadCustomScript(jsDriver);
             LOGGER.debug("Runing harvest function: " + jsDriver.executeScript(STUPID_GAME_HARVEST_AJAX));;
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
@@ -89,9 +111,10 @@ public class StupidGameBotTest {
             JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
             //LOGGER.debug("Loading Script: " + jsDriver.executeScript(STUPID_GAME_HARVEST_LOAD_SCRIPT));
             String rawList = (String) jsDriver.executeScript(STUPID_GAME_FIGHT_LIST_AJAX);
-            rawList = rawList.substring(1, rawList.length() - 1);
-            rawList = rawList.replace("\\", "");
             LOGGER.trace("Runing Fight List function: " + rawList);
+            //rawList = rawList.substring(1, rawList.length() - 1);
+            //rawList = rawList.replace("\\", "");
+            //LOGGER.trace("Runing Fight List function: " + rawList);
             JSONParser parser = new JSONParser();
             JSONObject result = (JSONObject) parser.parse(rawList);
             LOGGER.trace("Runing Fight function: " + result.toJSONString());
@@ -105,9 +128,10 @@ public class StupidGameBotTest {
                 LOGGER.info(currentRivalDescription.toString());
             }
             LOGGER.info("Best rival id is: <" + bestRival.getId() + ">.");
-            String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + "));";
+            //String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + "));";
+            String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + ");";
             LOGGER.debug("Runing Fight function: " + realQuerry);
-            String rawAnswer = (String) jsDriver.executeScript(realQuerry);
+            Object rawAnswer = jsDriver.executeScript(realQuerry);
             LOGGER.debug("Runing Fight function: " + rawAnswer);
 
         } else {
