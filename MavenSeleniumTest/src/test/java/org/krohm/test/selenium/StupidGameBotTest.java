@@ -123,7 +123,7 @@ public class StupidGameBotTest {
         if (rd1 == null) {
             return rd2;
         }
-        if (rd2.getDefense() < rd1.getAttack()) {
+        if (rd2.getDefense() < rd1.getDefense()) {
             return rd2;
         }
         return rd1;
