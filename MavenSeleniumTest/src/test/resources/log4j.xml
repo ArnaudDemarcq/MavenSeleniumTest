@@ -9,14 +9,14 @@
     </appender>
     <appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%-5p - %-26.26c{1} - %m\n"/>
+            <param name="ConversionPattern" value="[%d{yyyyMMdd-HHmmss}] - %m\n"/>
         </layout>
     </appender>
     <appender name="FileAppender" class="org.apache.log4j.FileAppender">
         <param name="File" value="./target/logs/test.log"/>
         <param name="Append" value="true"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%-5p - %-26.26c{1} - %m\n"/>
+            <param name="ConversionPattern" value="[%d{yyyyMMdd-HHmmss}] %-5p - %-26.26c{1} - %m\n"/>
         </layout>
     </appender>
     <logger name="org.krohm">
