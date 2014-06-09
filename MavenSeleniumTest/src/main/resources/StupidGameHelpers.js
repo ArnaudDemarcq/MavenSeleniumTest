@@ -132,3 +132,8 @@ function fightStep1_test(rivalId){
 function fightStep2_test(){
     return genericStupidGameCaller("{\"method\":\"pvp.fight.finish\",\"args\":{\"boosters\":null}}");
 }
+
+function fightAll_test(rivalId){ // Sambe behavior as before
+     fightStep1_test(rivalId);
+     return fightStep2_test();
+}
