@@ -121,7 +121,7 @@ function harvestAll_test(){
 }
 
 function getRivalsList_test(){
-     return genericStupidGameCaller("{\"method\":\"pvp.rivals.get\",\"args\":{\"cSetId\":0,\"cItemId\":0}}");
+    return genericStupidGameCaller("{\"method\":\"pvp.rivals.get\",\"args\":{\"cSetId\":0,\"cItemId\":0}}");
 }
 
 function fightStep1_test(rivalId){
@@ -134,6 +134,10 @@ function fightStep2_test(){
 }
 
 function fightAll_test(rivalId){ // Sambe behavior as before
-     fightStep1_test(rivalId);
-     return fightStep2_test();
+    var step1Return = fightStep1_test(rivalId);
+    var step2Return =  fightStep2_test();
+    return {
+        "step1" :step1Return, 
+        "step2": step2Return
+    };
 }
