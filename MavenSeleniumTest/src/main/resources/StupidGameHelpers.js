@@ -116,6 +116,10 @@ function genericStupidGameCaller(dataString){
     return returnVar;
 }
 
+var STUPID_GAME_HARVESTALL = {
+    "method":"city.business.collectAll"
+};
+
 function harvestAll(){
     return genericStupidGameCaller("{\"method\":\"city.business.collectAll\"}");
 }
