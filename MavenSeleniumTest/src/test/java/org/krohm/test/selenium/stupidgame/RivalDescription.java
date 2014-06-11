@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.krohm.test.selenium;
+package org.krohm.test.selenium.stupidgame;
 
 /**
  *
@@ -15,10 +15,47 @@ public class RivalDescription {
     private int itemNumber = -1;
     private int attack = Integer.MAX_VALUE;
     private int id = -1;
+    // player only
+    private int cash;
+    private int energy;
+    private int energy_lim;
+    private int gold;
 
     @Override
     public String toString() {
         return "[" + attack + "/" + defense + "]<" + id + "> Rival named <" + name + "> has <" + itemNumber + "> items.";
+    }
+
+    public int getCash() {
+        return cash;
+    }
+
+    public void setCash(int cash) {
+        this.cash = cash;
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public void setEnergy(int energy) {
+        this.energy = energy;
+    }
+
+    public int getEnergy_lim() {
+        return energy_lim;
+    }
+
+    public void setEnergy_lim(int energy_lim) {
+        this.energy_lim = energy_lim;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public void setGold(int gold) {
+        this.gold = gold;
     }
 
     public int getId() {

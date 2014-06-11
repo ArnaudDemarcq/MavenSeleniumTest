@@ -10,20 +10,23 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import java.util.Map;
-import org.apache.commons.io.IOUtils;
+import java.util.ArrayList;
+import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.Test;
+import org.krohm.test.selenium.stupidgame.AllStatsChooser;
+import org.krohm.test.selenium.stupidgame.RivalDescription;
+import org.krohm.test.selenium.stupidgame.StupidGameFightChooser;
+import org.krohm.test.selenium.stupidgame.WeakerRivalChooser;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -42,9 +45,11 @@ public class StupidGameBotTest {
     private static final String STUPID_GAME_HARVEST_LOAD_SCRIPT = "jQuery.getScript(\"" + STUPID_GAME_CUSTOM_JS_URL + "\");";
     private static final String STUPID_GAME_HARVEST_AJAX = "return harvestAll();";
     private static final String STUPID_GAME_FIGHT_LIST_AJAX = "return getRivalsList();";//getRivalsList()
+    private static final String STUPID_GAME_USER_DATA = "return JSON.stringify(userData);";//getRivalsList()
     private static final String STUPID_GAME_FIGHT_STEP1_AJAX = "return fightAll(";//getRivalsList()
     //private static final String STUPID_GAME_FIGHT_LIST_AJAX = "return JSON.stringify(getRivalsList());";//getRivalsList()
     //private static final String STUPID_GAME_FIGHT_STEP1_AJAX = "return JSON.stringify(makeFightStep1(";//getRivalsList()
+    private static final StupidGameFightChooser CHOOSER = new AllStatsChooser();
 
     public StupidGameBotTest() throws Exception {
     }
@@ -88,11 +93,6 @@ public class StupidGameBotTest {
         stupidGameFight(driver);
     }
 
-    public void testLog() throws Exception {
-        WebDriver driver = getTestDriver();
-        logStupidGameCounters(driver);
-    }
-
     private void stupidGameHarvest(WebDriver driver) throws Exception {
         LOGGER.info("Starting Harverst Feature ...");
         if (driver instanceof JavascriptExecutor) {
@@ -117,16 +117,10 @@ public class StupidGameBotTest {
             //LOGGER.trace("Runing Fight List function: " + rawList);
             JSONParser parser = new JSONParser();
             JSONObject result = (JSONObject) parser.parse(rawList);
-            LOGGER.trace("Runing Fight function: " + result.toJSONString());
-            JSONArray rivals = (JSONArray) result.get("response");
-            RivalDescription bestRival = null;
-            for (int i = 0; i < rivals.size(); i++) {
-                JSONObject currentRival = (JSONObject) rivals.get(i);
-                LOGGER.trace("got one: " + currentRival.toJSONString());
-                RivalDescription currentRivalDescription = parseRivalJson(currentRival);
-                bestRival = compareRivals(bestRival, currentRivalDescription);
-                LOGGER.info(currentRivalDescription.toString());
-            }
+            List<RivalDescription> rivals = getRivals(jsDriver);
+            RivalDescription player = getPlayerInfo(jsDriver);
+            LOGGER.info("Player stats are: " + player.toString());
+            RivalDescription bestRival = CHOOSER.chooseOpponent(player, rivals);
             LOGGER.info("Best rival id is: <" + bestRival.getId() + ">.");
             //String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + "));";
             String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + ");";
@@ -140,17 +134,27 @@ public class StupidGameBotTest {
         LOGGER.trace(driver.getPageSource());
     }
 
-    private RivalDescription compareRivals(RivalDescription rd1, RivalDescription rd2) {
-        if (rd2 == null) {
-            return rd1;
+    private List<RivalDescription> getRivals(JavascriptExecutor jsDriver) throws ParseException {
+        String rawList = (String) jsDriver.executeScript(STUPID_GAME_FIGHT_LIST_AJAX);
+        LOGGER.trace("Runing Fight List function: " + rawList);;
+        JSONParser parser = new JSONParser();
+        JSONObject result = (JSONObject) parser.parse(rawList);
+        return getRivals(result);
+    }
+
+    private List<RivalDescription> getRivals(JSONObject rawList) {
+        List<RivalDescription> returnList = new ArrayList<RivalDescription>();
+        LOGGER.trace("Runing Fight function: " + rawList.toJSONString());
+        JSONArray rivals = (JSONArray) rawList.get("response");
+        RivalDescription bestRival = null;
+        for (int i = 0; i < rivals.size(); i++) {
+            JSONObject currentRival = (JSONObject) rivals.get(i);
+            LOGGER.trace("got one: " + currentRival.toJSONString());
+            RivalDescription currentRivalDescription = parseRivalJson(currentRival);
+            returnList.add(currentRivalDescription);
+            LOGGER.info(currentRivalDescription.toString());
         }
-        if (rd1 == null) {
-            return rd2;
-        }
-        if (rd2.getDefense() < rd1.getDefense()) {
-            return rd2;
-        }
-        return rd1;
+        return returnList;
     }
 
     private RivalDescription parseRivalJson(JSONObject currentRival) {
@@ -161,28 +165,10 @@ public class StupidGameBotTest {
         } catch (Exception ex) {
             LOGGER.debug(ex.getMessage());
         }
-        // defense
-        try {
-            String stringNum = "" + currentRival.get("defence");
-            returnRivalDescription.setDefense(Integer.parseInt(stringNum));
-        } catch (Exception ex) {
-            LOGGER.debug(ex.getMessage());
-        }
-        // attack
-        try {
-            String stringNum = "" + currentRival.get("attack");
-            returnRivalDescription.setAttack(Integer.parseInt(stringNum));
-        } catch (Exception ex) {
-            LOGGER.debug(ex.getMessage());
-        }
-        // id
-        try {
-            String stringNum = "" + currentRival.get("id");
-            returnRivalDescription.setId(Integer.parseInt(stringNum));
-        } catch (Exception ex) {
-            LOGGER.debug(ex.getMessage());
-        }
-        // name
+        // numerical values
+        returnRivalDescription.setDefense(getJsonValueAsInt(currentRival, "defence", Integer.MAX_VALUE));
+        returnRivalDescription.setAttack(getJsonValueAsInt(currentRival, "attack", Integer.MAX_VALUE));
+        returnRivalDescription.setId(getJsonValueAsInt(currentRival, "id", -1));
         try {
             returnRivalDescription.setName((String) currentRival.get("username"));
         } catch (Exception ex) {
@@ -192,15 +178,41 @@ public class StupidGameBotTest {
 
     }
 
-    private void logStupidGameCounters(WebDriver driver) throws InterruptedException {
-        LOGGER.info("Starting Counters Logging ...");
-        driver.get(STUPID_GAME_HARVEST_URL);
-        LOGGER.error("before wait ...");
-        WebDriverWait wait = new WebDriverWait(driver, 60);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("main")));
-        LOGGER.error("after wait ...");
-        WebElement mainDiv = driver.findElement(By.id("main"));
-        LOGGER.debug("############### Main Div" + mainDiv);
+    private RivalDescription getPlayerInfo(JavascriptExecutor jsDriver) throws ParseException {
+        String rawData = (String) jsDriver.executeScript(STUPID_GAME_USER_DATA);
+        LOGGER.trace("User data is: " + rawData);
+        JSONParser parser = new JSONParser();
+        JSONObject result = (JSONObject) parser.parse(rawData);
+        return getPlayerInfo(result);
+    }
+
+    private int getJsonValueAsInt(JSONObject currentRival, String key, int defaultValue) {
+        try {
+            String stringNum = "" + currentRival.get(key);
+            return Integer.parseInt(stringNum);
+        } catch (Exception ex) {
+            LOGGER.warn("Cannot parse value for key: <" + key + "> Reason: " + ex.getMessage());
+        }
+        return defaultValue;
+    }
+
+    private RivalDescription getPlayerInfo(JSONObject userData) {
+        RivalDescription returnRivalDescription = new RivalDescription();
+
+        returnRivalDescription.setDefense(getJsonValueAsInt(userData, "defence", Integer.MAX_VALUE));
+        returnRivalDescription.setAttack(getJsonValueAsInt(userData, "attack", Integer.MAX_VALUE));
+        returnRivalDescription.setId(getJsonValueAsInt(userData, "id", -1));
+
+        // ressources 
+        JSONObject ressources = (JSONObject) userData.get("resources");
+        returnRivalDescription.setCash(getJsonValueAsInt(ressources, "bucks", Integer.MIN_VALUE));
+        returnRivalDescription.setEnergy(getJsonValueAsInt(ressources, "energy", Integer.MIN_VALUE));
+        returnRivalDescription.setEnergy_lim(getJsonValueAsInt(ressources, "energy_lim", Integer.MIN_VALUE));
+        returnRivalDescription.setGold(getJsonValueAsInt(ressources, "gold", Integer.MIN_VALUE));
+
+        return returnRivalDescription;
+
+
     }
 
     private WebDriver getTestDriver() {
