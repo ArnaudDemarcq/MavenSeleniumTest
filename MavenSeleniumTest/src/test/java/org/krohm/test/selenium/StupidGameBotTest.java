@@ -69,8 +69,6 @@ public class StupidGameBotTest {
         LOGGER.debug("Post Login Page loaded, title is: " + driver.getTitle());
         Utils.readRessource("/StupidGameHelpers.js");
         driver.get(STUPID_GAME_HARVEST_URL);
-
-
     }
 
     private void loadCustomScript(JavascriptExecutor jsDriver) throws Exception {
@@ -108,21 +106,19 @@ public class StupidGameBotTest {
         LOGGER.info("Starting Fight Feature ...");
         if (driver instanceof JavascriptExecutor) {
             JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
-            List<RivalDescription> rivals = getRivals(jsDriver);
             RivalDescription player = getPlayerInfo(jsDriver);
             LOGGER.info("Player stats are: " + player.toString());
-            RivalDescription bestRival = CHOOSER.chooseOpponent(player, rivals);
-            LOGGER.info("Best rival id is: <" + bestRival.getId() + ">. Stamina is: <" + player.getStamina() + ">.");
-            //String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + "));";
-            String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + ");";
             if (player.getStamina() > 1) {
+                List<RivalDescription> rivals = getRivals(jsDriver);
+                RivalDescription bestRival = CHOOSER.chooseOpponent(player, rivals);
+                LOGGER.info("Best rival id is: <" + bestRival.getId() + ">. Stamina is: <" + player.getStamina() + ">.");
+                String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + ");";
                 LOGGER.debug("Runing Fight function: " + realQuerry);
                 Object rawAnswer = jsDriver.executeScript(realQuerry);
                 LOGGER.debug("Runing Fight function: " + rawAnswer);
             } else {
                 LOGGER.info("not enougth stamina. Skipping fight");
             }
-
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
         }

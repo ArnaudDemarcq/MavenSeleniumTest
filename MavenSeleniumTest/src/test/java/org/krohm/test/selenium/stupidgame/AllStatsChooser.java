@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arnaud
  */
-public class AllStatsChooser implements StupidGameFightChooser {
+public class AllStatsChooser implements StupidGameFightChooser, RivalDescriptionFilter {
 
     private WeakerRivalChooser weakerRivalChooser = new WeakerRivalChooser();
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(AllStatsChooser.class);
 
     @Override
     public RivalDescription chooseOpponent(RivalDescription player, List<RivalDescription> rivals) {
-        List<RivalDescription> filteredList = applyFilter(player, rivals);
+        List<RivalDescription> filteredList = doFilter(player, rivals);
         if (filteredList.size() > 0) {
             return weakerRivalChooser.chooseOpponent(player, filteredList);
         }
@@ -27,7 +27,8 @@ public class AllStatsChooser implements StupidGameFightChooser {
         return weakerRivalChooser.chooseOpponent(player, rivals);
     }
 
-    private List<RivalDescription> applyFilter(RivalDescription player, List<RivalDescription> rivals) {
+    @Override
+    public List<RivalDescription> doFilter(RivalDescription player, List<RivalDescription> rivals) {
         List<RivalDescription> filteredList = new ArrayList<RivalDescription>();
         for (RivalDescription currentRival : rivals) {
             if (player.getAttack() > currentRival.getDefense()
