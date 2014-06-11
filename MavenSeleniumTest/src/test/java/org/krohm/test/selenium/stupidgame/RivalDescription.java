@@ -19,11 +19,29 @@ public class RivalDescription {
     private int cash;
     private int energy;
     private int energy_lim;
+    private int stamina;
+    private int stamina_lim;
     private int gold;
 
     @Override
     public String toString() {
         return "[" + attack + "/" + defense + "]<" + id + "> Rival named <" + name + "> has <" + itemNumber + "> items.";
+    }
+
+    public int getStamina() {
+        return stamina;
+    }
+
+    public void setStamina(int stamina) {
+        this.stamina = stamina;
+    }
+
+    public int getStamina_lim() {
+        return stamina_lim;
+    }
+
+    public void setStamina_lim(int stamina_lim) {
+        this.stamina_lim = stamina_lim;
     }
 
     public int getCash() {

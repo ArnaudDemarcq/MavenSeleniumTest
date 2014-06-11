@@ -10,23 +10,22 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import java.util.ArrayList;
 import java.util.List;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 import org.krohm.test.selenium.stupidgame.AllStatsChooser;
 import org.krohm.test.selenium.stupidgame.RivalDescription;
+import org.krohm.test.selenium.stupidgame.RivalDescriptionUtil;
 import org.krohm.test.selenium.stupidgame.StupidGameFightChooser;
-import org.krohm.test.selenium.stupidgame.WeakerRivalChooser;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StupidGameBotTest {
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(StupidGameBotTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StupidGameBotTest.class);
     private static final String STUPID_GAME_CUSTOM_JS_URL = "https://raw.githubusercontent.com/ArnaudDemarcq/MavenSeleniumTest/master/MavenSeleniumTest/src/main/resources/StupidGameHelpers.js";
     //private static final String STUPID_GAME_CUSTOM_JS_URL = Utils.readRessource("/StupidGameHelpers.js");
     private static final String STUPID_GAME_LOGIN_URL = "http://www.sexgangsters.com/login/";
@@ -109,24 +108,20 @@ public class StupidGameBotTest {
         LOGGER.info("Starting Fight Feature ...");
         if (driver instanceof JavascriptExecutor) {
             JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
-            //LOGGER.debug("Loading Script: " + jsDriver.executeScript(STUPID_GAME_HARVEST_LOAD_SCRIPT));
-            String rawList = (String) jsDriver.executeScript(STUPID_GAME_FIGHT_LIST_AJAX);
-            LOGGER.trace("Runing Fight List function: " + rawList);
-            //rawList = rawList.substring(1, rawList.length() - 1);
-            //rawList = rawList.replace("\\", "");
-            //LOGGER.trace("Runing Fight List function: " + rawList);
-            JSONParser parser = new JSONParser();
-            JSONObject result = (JSONObject) parser.parse(rawList);
             List<RivalDescription> rivals = getRivals(jsDriver);
             RivalDescription player = getPlayerInfo(jsDriver);
             LOGGER.info("Player stats are: " + player.toString());
             RivalDescription bestRival = CHOOSER.chooseOpponent(player, rivals);
-            LOGGER.info("Best rival id is: <" + bestRival.getId() + ">.");
+            LOGGER.info("Best rival id is: <" + bestRival.getId() + ">. Stamina is: <" + player.getStamina() + ">.");
             //String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + "));";
             String realQuerry = STUPID_GAME_FIGHT_STEP1_AJAX + bestRival.getId() + ");";
-            LOGGER.debug("Runing Fight function: " + realQuerry);
-            Object rawAnswer = jsDriver.executeScript(realQuerry);
-            LOGGER.debug("Runing Fight function: " + rawAnswer);
+            if (player.getStamina() > 1) {
+                LOGGER.debug("Runing Fight function: " + realQuerry);
+                Object rawAnswer = jsDriver.executeScript(realQuerry);
+                LOGGER.debug("Runing Fight function: " + rawAnswer);
+            } else {
+                LOGGER.info("not enougth stamina. Skipping fight");
+            }
 
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
@@ -139,43 +134,7 @@ public class StupidGameBotTest {
         LOGGER.trace("Runing Fight List function: " + rawList);;
         JSONParser parser = new JSONParser();
         JSONObject result = (JSONObject) parser.parse(rawList);
-        return getRivals(result);
-    }
-
-    private List<RivalDescription> getRivals(JSONObject rawList) {
-        List<RivalDescription> returnList = new ArrayList<RivalDescription>();
-        LOGGER.trace("Runing Fight function: " + rawList.toJSONString());
-        JSONArray rivals = (JSONArray) rawList.get("response");
-        RivalDescription bestRival = null;
-        for (int i = 0; i < rivals.size(); i++) {
-            JSONObject currentRival = (JSONObject) rivals.get(i);
-            LOGGER.trace("got one: " + currentRival.toJSONString());
-            RivalDescription currentRivalDescription = parseRivalJson(currentRival);
-            returnList.add(currentRivalDescription);
-            LOGGER.info(currentRivalDescription.toString());
-        }
-        return returnList;
-    }
-
-    private RivalDescription parseRivalJson(JSONObject currentRival) {
-        RivalDescription returnRivalDescription = new RivalDescription();
-        // number of items
-        try {
-            returnRivalDescription.setItemNumber(((JSONArray) currentRival.get("items")).size());
-        } catch (Exception ex) {
-            LOGGER.debug(ex.getMessage());
-        }
-        // numerical values
-        returnRivalDescription.setDefense(getJsonValueAsInt(currentRival, "defence", Integer.MAX_VALUE));
-        returnRivalDescription.setAttack(getJsonValueAsInt(currentRival, "attack", Integer.MAX_VALUE));
-        returnRivalDescription.setId(getJsonValueAsInt(currentRival, "id", -1));
-        try {
-            returnRivalDescription.setName((String) currentRival.get("username"));
-        } catch (Exception ex) {
-            LOGGER.debug(ex.getMessage());
-        }
-        return returnRivalDescription;
-
+        return RivalDescriptionUtil.getRivals(result);
     }
 
     private RivalDescription getPlayerInfo(JavascriptExecutor jsDriver) throws ParseException {
@@ -183,36 +142,7 @@ public class StupidGameBotTest {
         LOGGER.trace("User data is: " + rawData);
         JSONParser parser = new JSONParser();
         JSONObject result = (JSONObject) parser.parse(rawData);
-        return getPlayerInfo(result);
-    }
-
-    private int getJsonValueAsInt(JSONObject currentRival, String key, int defaultValue) {
-        try {
-            String stringNum = "" + currentRival.get(key);
-            return Integer.parseInt(stringNum);
-        } catch (Exception ex) {
-            LOGGER.warn("Cannot parse value for key: <" + key + "> Reason: " + ex.getMessage());
-        }
-        return defaultValue;
-    }
-
-    private RivalDescription getPlayerInfo(JSONObject userData) {
-        RivalDescription returnRivalDescription = new RivalDescription();
-
-        returnRivalDescription.setDefense(getJsonValueAsInt(userData, "defence", Integer.MAX_VALUE));
-        returnRivalDescription.setAttack(getJsonValueAsInt(userData, "attack", Integer.MAX_VALUE));
-        returnRivalDescription.setId(getJsonValueAsInt(userData, "id", -1));
-
-        // ressources 
-        JSONObject ressources = (JSONObject) userData.get("resources");
-        returnRivalDescription.setCash(getJsonValueAsInt(ressources, "bucks", Integer.MIN_VALUE));
-        returnRivalDescription.setEnergy(getJsonValueAsInt(ressources, "energy", Integer.MIN_VALUE));
-        returnRivalDescription.setEnergy_lim(getJsonValueAsInt(ressources, "energy_lim", Integer.MIN_VALUE));
-        returnRivalDescription.setGold(getJsonValueAsInt(ressources, "gold", Integer.MIN_VALUE));
-
-        return returnRivalDescription;
-
-
+        return RivalDescriptionUtil.getPlayerInfo(result);
     }
 
     private WebDriver getTestDriver() {
