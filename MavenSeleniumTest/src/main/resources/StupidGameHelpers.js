@@ -120,6 +120,15 @@ var STUPID_GAME_HARVESTALL = {
     "method":"city.business.collectAll"
 };
 
+var STUPID_GAME_DO_JOB_RAW = {
+    "method":"city.loc.job.do",
+    "args":{
+        "cityId":6,
+        "locId":602
+    }
+};
+
+
 function harvestAll(){
     return genericStupidGameCaller("{\"method\":\"city.business.collectAll\"}");
 }
@@ -143,5 +152,17 @@ function fightAll(rivalId){ // Sambe behavior as before
     return {
         "step1" :step1Return, 
         "step2": step2Return
+    };
+}
+
+function doJob(){
+    if (userData.resources.energy > 15) {
+        var tmpDoJob = STUPID_GAME_DO_JOB_RAW;
+        tmpDoJob.args.cityId = userData.cities[0].id;
+        tmpDoJob.args.cityId.locId = 100 * userData.cities[0].id + userData.cities[0].stage+1;
+        return genericStupidGameCaller(JSON.stringify(tmpDoJob));
+    }
+    return tmpReturn =  {
+        "cause":"Not Enought Energy"
     };
 }

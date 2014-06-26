@@ -43,6 +43,7 @@ public class StupidGameBotTest {
     private static final String STUPID_GAME_HARVEST_URL = "http://www.sexgangsters.com/#business";
     private static final String STUPID_GAME_HARVEST_LOAD_SCRIPT = "jQuery.getScript(\"" + STUPID_GAME_CUSTOM_JS_URL + "\");";
     private static final String STUPID_GAME_HARVEST_AJAX = "return harvestAll();";
+    private static final String STUPID_GAME_DO_JOB_AJAX = "return doJob();";
     private static final String STUPID_GAME_FIGHT_LIST_AJAX = "return getRivalsList();";//getRivalsList()
     private static final String STUPID_GAME_USER_DATA = "return JSON.stringify(userData);";//getRivalsList()
     private static final String STUPID_GAME_FIGHT_STEP1_AJAX = "return fightAll(";//getRivalsList()
@@ -119,6 +120,18 @@ public class StupidGameBotTest {
             } else {
                 LOGGER.info("not enougth stamina. Skipping fight");
             }
+        } else {
+            LOGGER.warn("It was worth trying, but JS is disabled");
+        }
+        LOGGER.trace(driver.getPageSource());
+    }
+    
+    private void stupidGameProgress (WebDriver driver) throws Exception {
+        LOGGER.info("Starting Fight Feature ...");
+        if (driver instanceof JavascriptExecutor) {  
+               JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
+            loadCustomScript(jsDriver);
+            LOGGER.debug("Runing harvest function: " + jsDriver.executeScript(STUPID_GAME_DO_JOB_AJAX));;
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
         }
