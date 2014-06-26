@@ -89,6 +89,7 @@ public class StupidGameBotTest {
         stupidGameLogin(driver);
         stupidGameHarvest(driver);
         stupidGameFight(driver);
+        stupidGameProgress(driver);
     }
 
     private void stupidGameHarvest(WebDriver driver) throws Exception {
@@ -131,7 +132,7 @@ public class StupidGameBotTest {
         if (driver instanceof JavascriptExecutor) {  
                JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
             loadCustomScript(jsDriver);
-            LOGGER.debug("Runing harvest function: " + jsDriver.executeScript(STUPID_GAME_DO_JOB_AJAX));;
+            LOGGER.debug("Runing Do Job function: " + jsDriver.executeScript(STUPID_GAME_DO_JOB_AJAX));;
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
         }
