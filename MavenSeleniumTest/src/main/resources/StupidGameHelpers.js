@@ -123,9 +123,29 @@ var STUPID_GAME_HARVESTALL = {
 function harvestAll(){
     return genericStupidGameCaller("{\"method\":\"city.business.collectAll\"}");
 }
+var STUPID_GAME_GET_RIVALS_RAW = {
+    "method":"pvp.rivals.get",
+    "args":{
+        "cSetId":1,
+        "cItemId":1
+    }
+};
 
 function getRivalsList(){
-    return genericStupidGameCaller("{\"method\":\"pvp.rivals.get\",\"args\":{\"cSetId\":0,\"cItemId\":0}}");
+    var tmpGetRivals = STUPID_GAME_GET_RIVALS_RAW;
+    for (var i = 0; i < userData.collectibles.length; i++) {
+        var currentCityColl = userData.collectibles[i];
+        if (! currentCityColl.collected){
+            tmpGetRivals.args.cSetId = currentCityColl.id;
+            for (var j = 0 ; j < currentCityColl.items.length; j++){
+                var currentItem = currentCityColl.items[j];
+                if (currentItem.qty < 1 ){
+                    tmpGetRivals.args.cItemId = currentItem.id;
+                }
+            }
+        }
+    }
+    return genericStupidGameCaller(JSON.stringify(tmpGetRivals));
 }
 
 function fightStep1(rivalId){
@@ -165,3 +185,18 @@ function doJob(){
         "cause":"Not Enought Energy"
     };
 }
+
+var STUPID_GAME_BUY_BUSINESS ={
+    "method":"city.business.buy",
+    "args":{
+        "cityId":7,
+        "businessId":702
+    }
+};
+var STUPID_GAME_UPGRADE_BUSINESS ={
+    "method":"city.business.upgrade",
+    "args":{
+        "cityId":7,
+        "businessId":702
+    }
+};
