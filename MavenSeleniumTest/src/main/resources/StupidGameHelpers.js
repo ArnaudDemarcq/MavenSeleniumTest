@@ -126,8 +126,8 @@ function harvestAll(){
 var STUPID_GAME_GET_RIVALS_RAW = {
     "method":"pvp.rivals.get",
     "args":{
-        "cSetId":1,
-        "cItemId":1
+        "cSetId":0,
+        "cItemId":0
     }
 };
 
