@@ -248,8 +248,11 @@ function buyAllRequiredItems(){
             if (realQuantity < currentTargetItem.targetQuantity){ 
                 var buy_order = SUPID_GAME_BUY_ITEM_RAW;
                 buy_order.args.typeId = currentTargetItem.id;
-                genericStupidGameCaller(JSON.stringify(buy_order));
+                return genericStupidGameCaller(JSON.stringify(buy_order));
             }
         }
     }
+    return tmpReturn =  {
+        "cause":"Nothing to buy"
+    };
 }
