@@ -200,3 +200,56 @@ var STUPID_GAME_UPGRADE_BUSINESS ={
         "businessId":702
     }
 };
+
+// Make sure enougth equipment is purchased to proceeed to the quests
+// Exact formula is not known for the amount. Strangely, userData.items does contain the correct Id ...
+// But NOT directly the amount. It it not Amout*time either, even if it seems so for most items
+// So we'll have to store the target "fake count" number. There is still to be understood here ...
+var targetItemCountList = [
+{
+    "id": 52,
+    "targetQuantity": 100, 
+    "lvl": 1
+},{
+    "id": 62,
+    "targetQuantity": 75, 
+    "lvl": 1
+}
+];
+
+function getItemQuantity(itemId){
+    var itemList = userData.items;
+    for (var i = 0 ; i< itemList.length ; i++){
+        var currentItem = userData.items[i];
+        var currentItemId = currentItem[0];
+        var currentItemCount = currentItem[1];
+        if (currentItemId == itemId) {
+            return currentItemCount;
+        }
+    }
+    return -1;
+}
+
+var SUPID_GAME_BUY_ITEM_RAW ={
+    "method":"user.items.buy",
+    "args":{
+        "typeId":52,
+        "count":1
+    }
+};
+
+function buyAllRequiredItems(){
+    var currentLevel = 45
+    for (var i = 0 ; i< targetItemCountList.length ; i ++){
+        var currentTargetItem = targetItemCountList[i];
+        if (currentTargetItem.lvl <= currentLevel){ // Only purchassable items
+            var realQuantity = getItemQuantity(currentTargetItem.id);
+            console.log(JSON.stringify(currentTargetItem)+ " ------ " + realQuantity);
+            if (realQuantity < currentTargetItem.targetQuantity){ 
+                var buy_order = SUPID_GAME_BUY_ITEM_RAW;
+                buy_order.args.typeId = currentTargetItem.id;
+                genericStupidGameCaller(JSON.stringify(buy_order));
+            }
+        }
+    }
+}

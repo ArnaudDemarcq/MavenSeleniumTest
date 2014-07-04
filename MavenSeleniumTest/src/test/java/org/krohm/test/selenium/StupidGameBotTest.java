@@ -86,13 +86,20 @@ public class StupidGameBotTest {
     @Test
     public void harvestCash() throws Exception {
         WebDriver driver = getTestDriver();
-        stupidGameLogin(driver);
-        stupidGameHarvest(driver);
-        stupidGameFight(driver);
-        stupidGameProgress(driver);
+        LOGGER.info("Starting Fight Feature ...");
+        if (driver instanceof JavascriptExecutor) {
+            JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
+            stupidGameLogin(driver);
+            stupidGameHarvest(jsDriver);
+            stupidGameFight(jsDriver);
+            stupidGameProgress(jsDriver);
+            stupidGameBuyStuff(jsDriver);
+        } else {
+            LOGGER.warn("It was worth trying, but JS is disabled");
+        }
     }
 
-    private void stupidGameHarvest(WebDriver driver) throws Exception {
+    private void stupidGameHarvest(JavascriptExecutor driver) throws Exception {
         LOGGER.info("Starting Harverst Feature ...");
         if (driver instanceof JavascriptExecutor) {
             JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
@@ -101,10 +108,9 @@ public class StupidGameBotTest {
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
         }
-        LOGGER.trace(driver.getPageSource());
     }
 
-    private void stupidGameFight(WebDriver driver) throws Exception {
+    private void stupidGameFight(JavascriptExecutor driver) throws Exception {
         LOGGER.info("Starting Fight Feature ...");
         if (driver instanceof JavascriptExecutor) {
             JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
@@ -124,19 +130,23 @@ public class StupidGameBotTest {
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
         }
-        LOGGER.trace(driver.getPageSource());
     }
-    
-    private void stupidGameProgress (WebDriver driver) throws Exception {
+
+    private void stupidGameProgress(JavascriptExecutor driver) throws Exception {
         LOGGER.info("Starting Fight Feature ...");
-        if (driver instanceof JavascriptExecutor) {  
-               JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
+        if (driver instanceof JavascriptExecutor) {
+            JavascriptExecutor jsDriver = ((JavascriptExecutor) driver);
             loadCustomScript(jsDriver);
             LOGGER.debug("Runing Do Job function: " + jsDriver.executeScript(STUPID_GAME_DO_JOB_AJAX));;
         } else {
             LOGGER.warn("It was worth trying, but JS is disabled");
         }
-        LOGGER.trace(driver.getPageSource());
+    }
+
+    private void stupidGameBuyStuff(JavascriptExecutor jsDriver) throws Exception {
+        LOGGER.info("Starting Buy Stuff Feature ...");
+        loadCustomScript(jsDriver);
+        LOGGER.debug("Runing Do Job function: " + jsDriver.executeScript("return buyAllRequiredItems();"));;
     }
 
     private List<RivalDescription> getRivals(JavascriptExecutor jsDriver) throws ParseException {
