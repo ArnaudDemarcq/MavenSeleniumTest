@@ -244,7 +244,6 @@ function buyAllRequiredItems(){
         var currentTargetItem = targetItemCountList[i];
         if (currentTargetItem.lvl <= currentLevel){ // Only purchassable items
             var realQuantity = getItemQuantity(currentTargetItem.id);
-            console.log(JSON.stringify(currentTargetItem)+ " ------ " + realQuantity);
             if (realQuantity < currentTargetItem.targetQuantity){ 
                 var buy_order = SUPID_GAME_BUY_ITEM_RAW;
                 buy_order.args.typeId = currentTargetItem.id;
