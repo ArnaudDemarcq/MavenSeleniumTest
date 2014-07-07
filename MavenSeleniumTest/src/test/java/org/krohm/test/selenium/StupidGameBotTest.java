@@ -146,7 +146,7 @@ public class StupidGameBotTest {
     private void stupidGameBuyStuff(JavascriptExecutor jsDriver) throws Exception {
         LOGGER.info("Starting Buy Stuff Feature ...");
         loadCustomScript(jsDriver);
-        LOGGER.debug("Runing Do Job function: " + jsDriver.executeScript("return buyAllRequiredItems();"));;
+        LOGGER.debug("Runing Do Job function: " + jsDriver.executeScript("return spendMoney();"));;
     }
 
     private List<RivalDescription> getRivals(JavascriptExecutor jsDriver) throws ParseException {

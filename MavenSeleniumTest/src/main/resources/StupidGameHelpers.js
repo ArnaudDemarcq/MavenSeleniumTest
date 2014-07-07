@@ -186,20 +186,6 @@ function doJob(){
     };
 }
 
-var STUPID_GAME_BUY_BUSINESS ={
-    "method":"city.business.buy",
-    "args":{
-        "cityId":7,
-        "businessId":702
-    }
-};
-var STUPID_GAME_UPGRADE_BUSINESS ={
-    "method":"city.business.upgrade",
-    "args":{
-        "cityId":7,
-        "businessId":702
-    }
-};
 
 // Make sure enougth equipment is purchased to proceeed to the quests
 // Exact formula is not known for the amount. Strangely, userData.items does contain the correct Id ...
@@ -208,14 +194,49 @@ var STUPID_GAME_UPGRADE_BUSINESS ={
 var targetItemCountList = [
 {
     "id": 52,
-    "targetQuantity": 100, 
+    "targetQuantity": 1, 
+    "lvl": 1
+},{
+    "id": 57,
+    "targetQuantity": 1, 
     "lvl": 1
 },{
     "id": 62,
-    "targetQuantity": 75, 
+    "targetQuantity": 1, 
     "lvl": 1
+},{
+    "id": 67,
+    "targetQuantity": 1, 
+    "lvl": 1
+},{
+    "id": 72,
+    "targetQuantity": 1, 
+    "lvl": 1
+},{
+    "id": 77,
+    "targetQuantity": 1, 
+    "lvl": 1
+},{
+    "id": 82,
+    "targetQuantity": 1, 
+    "lvl": 1
+},{
+    "id": 87,
+    "targetQuantity": 1, 
+    "lvl": 1
+},{
+    "id": 92,
+    "targetQuantity": 1, 
+    "lvl": 21
+},{
+    "id": 97,
+    "targetQuantity": 1, 
+    "lvl": 21
 }
 ];
+
+// TORSO :
+// 57,62,67,72,77,82,87,92,87
 
 function getItemQuantity(itemId){
     var itemList = userData.items;
@@ -254,4 +275,83 @@ function buyAllRequiredItems(){
     return tmpReturn =  {
         "cause":"Nothing to buy"
     };
+}
+
+var STUPID_GAME_BUY_BUSINESS ={
+    "method":"city.business.buy",
+    "args":{
+        "cityId":7,
+        "businessId":702
+    }
+};
+
+function performBuisinessAquisition(cityId, businessId){
+    var tmpOrder = STUPID_GAME_BUY_BUSINESS;
+    tmpOrder.args.cityId = cityId;
+    tmpOrder.args.businessId = businessId;
+    return genericStupidGameCaller(JSON.stringify(tmpOrder));
+}
+
+
+var STUPID_GAME_UPGRADE_BUSINESS ={
+    "method":"city.business.upgrade",
+    "args":{
+        "cityId":7,
+        "businessId":702
+    }
+};
+function performBuisinessUpgrade(cityId, businessId){
+    var tmpOrder = STUPID_GAME_UPGRADE_BUSINESS;
+    tmpOrder.args.cityId = cityId;
+    tmpOrder.args.businessId = businessId;
+    return genericStupidGameCaller(JSON.stringify(tmpOrder));  
+}
+
+
+function isBusinessUpToDate(){
+    for (var i = 0 ; i< userData.cities.length ; i ++){
+        var currentCity = userData.cities[i];
+        for (var j = 0 ; j < currentCity.businesses.length ; j++){
+            var currentBusiness = currentCity.businesses[j];
+            if (currentBusiness.isBought == false){
+                return false;
+            }
+            if (currentBusiness.stage < 2){
+                return false;
+            }
+            if (currentCity.id == 1 && currentBusiness.stage < 3) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function upgradeBuisiness(){
+    for (var i = 0 ; i< userData.cities.length ; i ++){
+        var currentCity = userData.cities[i];
+        for (var j = 0 ; j < currentCity.businesses.length ; j++){
+            var currentBusiness = currentCity.businesses[j];
+            if (currentBusiness.isBought == false){
+                return performBuisinessAquisition(currentCity.id, currentBusiness.id);
+            }
+            if (currentBusiness.stage < 2){
+                return performBuisinessUpgrade(currentCity.id, currentBusiness.id);
+            }
+            if (currentCity.id == 1 && currentBusiness.stage < 3) {
+                return performBuisinessUpgrade(currentCity.id, currentBusiness.id);
+            }
+        }
+    }
+    return tmpReturn =  {
+        "cause":"Nothing business to upgrade"
+    }; 
+}
+
+function spendMoney(){
+    if (isBusinessUpToDate()){
+        return upgradeBuisiness();
+    } else {
+        return buyAllRequiredItems();
+    }   
 }
