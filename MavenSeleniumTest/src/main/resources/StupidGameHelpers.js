@@ -350,8 +350,8 @@ function upgradeBuisiness(){
 
 function spendMoney(){
     if (isBusinessUpToDate()){
-        return upgradeBuisiness();
-    } else {
         return buyAllRequiredItems();
+    } else {
+        return upgradeBuisiness();
     }   
 }
